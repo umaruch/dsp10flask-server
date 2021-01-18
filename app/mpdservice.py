@@ -50,6 +50,12 @@ def stop(value):
     client.stop()
     return None, 204
 
+# Переключение на другой временной промежуток
+@connection
+def to_time(value):
+    client.seekcur(value)
+    return None, 204
+
 # Следующий трек
 @connection
 def next(value):
@@ -155,7 +161,7 @@ def play_saved_playlist(playlistname):
     client.clear()
     client.load(playlistname)
     client.play()
-    return None, 200
+    return None, 204
       
 ###### Функции работы с файлами
 
@@ -171,7 +177,7 @@ def get_directory(directory):
 @connection
 def update_mpd_database():
     client.update()
-    return client.lsinfo()
+    return client.lsinfo(), 200
 
 # Добавить трек в один из плейлистов
 @connection

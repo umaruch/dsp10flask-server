@@ -15,7 +15,8 @@ commands = {
     'prev': mpdservice.prev,
     'volume': mpdservice.volume,
     'repeat': mpdservice.repeat,
-    'random': mpdservice.random
+    'random': mpdservice.random,
+    'time': mpdservice.to_time
 }
 
 @routes.route('', methods = ['GET'])
@@ -28,7 +29,7 @@ def run_command_handler():
         abort(400)
     # Проверка на наличие и правильность доп. аргумента
     # там где надо 
-    if cmd in ('volume', 'repeat', 'random'):
+    if cmd in ('volume', 'repeat', 'random', 'time'):
         try:
             value = int(request.args['value'])
         except Exception as e:

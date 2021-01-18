@@ -17,8 +17,8 @@ def playlists_info_handler():
 
     return jsonify(data), code
 
-@routes.route("/play")
-def switch_current_song_handler():
+@routes.route("/play", methods=['GET'])
+def switch_current_song_or_playlist_handler():
     # Переключить песню в текущем плейлисте
     songpos = request.args.get('songpos', None)
     playlistname = request.args.get('playlistname', None)
@@ -27,6 +27,9 @@ def switch_current_song_handler():
         abort(400)
     
     if not songpos and not playlistname:
+        abort(400)
+    
+    if playlistname == "current":
         abort(400)
 
     if songpos:
@@ -61,14 +64,53 @@ def delete_song_or_playlist_handler():
 @routes.route("/save", methods=['POST'])
 def save_curent_playlist_handler():
     # Список воспроизведение > плейлист
-    pass
+    try:
+        req_data = request.get_json()
+        playlistname = req_data['playlistname']
+    except Exception as e:
+        logging.error(e)
+        abort(400)
+
+    _, code = mpdservice.save_current_playlist(playlistname)
+
+    if code == 500:
+        abort(500)
+
+    return jsonify(None), code
 
 @routes.route("/rename", methods=['POST'])
 def rename_playlist_handler():
     # Переименовать плейлист
-    pass
+    try:
+        req_data = request.get_json()
+        current_name = req_data['currentname']
+        new_name = req_data['newname']
+    except Exception as e:
+        logging.error(e)
+        abort(400)
+
+    _, code = mpdservice.rename_playlist(current_name, new_name)
+
+    if code == 500:
+        abort(500)
+
+    return jsonify(None), code
 
 @routes.route("/swap", methods=['POST'])
 def swap_songs_handler():
     # Поставить песню в другую позицию в плейлисте
-    pass
+    try:
+        req_data = request.get_json()
+        playlistname = req_data['playlistname']
+        cur_pos = req_data['currentpos']
+        new_pos = req_data['newpos']
+    except Exception as e:
+        logging.error(e)
+        abort(400)
+
+    data, code = mpdservice.swap_songs_in_playlist(playlistname, cur_pos, new_pos)
+
+    if code == 500:
+        abort(500)
+
+    return jsonify(data), code
