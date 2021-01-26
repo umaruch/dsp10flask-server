@@ -11,17 +11,12 @@ def directory_info_handler():
     path = request.args.get('path', None)
     data, code = mpdservice.get_directory(path)
     
-    if code == 500:
-        abort(500)
-
     return jsonify(data), code 
 
 @routes.route("/update", methods=['GET'])
 def update_db_handler():
     # Ручное обновление базы данных mpd
     _, code = mpdservice.update_mpd_database()
-    if code == 500:
-        abort(500)
     
     return jsonify(None), code
 
@@ -38,9 +33,6 @@ def add_path_to_playlist_handler():
 
     _, code = mpdservice.song_to_playlist(path, playlistname)
 
-    if code == 500:
-        abort(500)
-
     return jsonify(None), code
 
 @routes.route("/play", methods=['POST'])
@@ -55,7 +47,5 @@ def play_path_handler():
         abort(400)
 
     _, code = mpdservice.clear_and_play(path)
-    if code == 500:
-        abort(500)
 
     return jsonify(None), code

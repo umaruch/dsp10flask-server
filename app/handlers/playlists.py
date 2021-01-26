@@ -12,9 +12,6 @@ def playlists_info_handler():
     playlistname = request.args.get('playlistname', None)
     data, code = mpdservice.get_playlist(playlistname)
 
-    if code == 500:
-        abort(500)
-
     return jsonify(data), code
 
 @routes.route("/play", methods=['GET'])
@@ -37,9 +34,6 @@ def switch_current_song_or_playlist_handler():
     if playlistname:
         _, code = mpdservice.play_saved_playlist(playlistname)
 
-    if code == 500:
-        abort(500)
-
     return jsonify(None), code    
 
 @routes.route("", methods=['DELETE'])
@@ -56,9 +50,6 @@ def delete_song_or_playlist_handler():
     else:
         data, code = mpdservice.delete_playlist(playlistname)
 
-    if code == 500:
-        abort(500)
-
     return jsonify(data), code
     
 @routes.route("/save", methods=['POST'])
@@ -72,9 +63,6 @@ def save_curent_playlist_handler():
         abort(400)
 
     _, code = mpdservice.save_current_playlist(playlistname)
-
-    if code == 500:
-        abort(500)
 
     return jsonify(None), code
 
@@ -91,9 +79,6 @@ def rename_playlist_handler():
 
     _, code = mpdservice.rename_playlist(current_name, new_name)
 
-    if code == 500:
-        abort(500)
-
     return jsonify(None), code
 
 @routes.route("/swap", methods=['POST'])
@@ -109,8 +94,5 @@ def swap_songs_handler():
         abort(400)
 
     data, code = mpdservice.swap_songs_in_playlist(playlistname, cur_pos, new_pos)
-
-    if code == 500:
-        abort(500)
 
     return jsonify(data), code

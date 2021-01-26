@@ -41,7 +41,4 @@ def run_command_handler():
     except KeyError:
         abort(400)
 
-    if code==500:
-        abort(500)
-
     return jsonify(data), code

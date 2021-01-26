@@ -50,7 +50,7 @@ function send_mpd_status(){
         }
     );
 }
-setInterval(send_mpd_status, 5000);
+setInterval(send_mpd_status, 2000);
 
 wss.on("connection", function(ws){
     start_mpd_status(ws);
