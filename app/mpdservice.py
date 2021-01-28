@@ -181,11 +181,15 @@ def delete_playlist(playlistname):
 
 # Воспроизводить сохраненный плейлист
 @connection
-def play_saved_playlist(playlistname):
+def play_saved_playlist(playlistname, songpos):
     try:
         client.clear()
         client.load(playlistname)
-        client.play()
+        if not songpos:
+            client.play()
+        else:
+            client.play(songpos)
+            
         return None, 204
     except mpd.base.CommandError:
         return {'error':'No such playlist'}, 404

@@ -19,20 +19,21 @@ def switch_current_song_or_playlist_handler():
     # Переключить песню в текущем плейлисте
     songpos = request.args.get('songpos', None)
     playlistname = request.args.get('playlistname', None)
-
-    if songpos and playlistname:
-        abort(400)
-    
-    if not songpos and not playlistname:
-        abort(400)
-    
-    if playlistname == "current":
+        
+    # Если запрос без аргументов
+    if not songpos or not playlistname:
         abort(400)
 
-    if songpos:
+    if playlistname=="current" and not songpos:
+        abort(400) 
+
+    # Проверка на текущий плейлист
+    if songpos and playlistname=="current":
         _, code = mpdservice.select_song_in_current_playlist(songpos)
-    if playlistname:
-        _, code = mpdservice.play_saved_playlist(playlistname)
+    # Иначе загружаем сохраненный плейлист
+    else:
+        _, code = mpdservice.play_saved_playlist(playlistname, songpos)
+
 
     return jsonify(None), code    
 

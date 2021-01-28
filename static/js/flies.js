@@ -1,6 +1,6 @@
 
 // Отображение сведений о файлах или папках пользователю
-function render_files(obj, data, root){
+function render_files(obj, data, root){ 
     data.forEach(element => {
         // Проверка на директориб
         if (typeof(element.directory) != "undefined"){
