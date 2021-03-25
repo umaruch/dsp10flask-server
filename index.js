@@ -25,15 +25,15 @@ function broadcast(data){
 function start_mpd_status(ws){
     mpc.status.status().then(
         status=>{
-            mpc.status.currentSong().then(
-                song=>{
-                    status.songinfo = song;
+            mpc.currentPlaylist.playlistInfo().then(
+                songs=>{
+                    status.queue = songs;
                     ws.send(JSON.stringify(status));
             });
     });
 }
 
-// Отправка статуса плеера c проверкой смены музыки
+// Отправка статуса плеера при смене состояния воспроизведения
 function send_mpd_status_witch_song_check(){
     // Получаем статус плеера
     mpc.status.status().then(
@@ -41,15 +41,29 @@ function send_mpd_status_witch_song_check(){
             // Проверка на то что музыка сменилась
             if(current_song_id!=status.songId){
                 current_song_id=status.songId;
-                mpc.status.currentSong().then(
-                    song=>{
-                        status.songinfo = song;
+                mpc.currentPlaylist.playlistInfo().then(
+                    songs=>{
+                        status.queue = songs;
                         broadcast(status);
                 });
             }
             else{
                 broadcast(status);
             }
+        }
+    );
+}
+
+// Отправка статуса плеера при смене состояния воспроизведения
+function send_mpd_status_with_current_playlist(){
+    // Получаем статус плеера
+    mpc.status.status().then(
+        status=>{
+                mpc.currentPlaylist.playlistInfo().then(
+                    songs=>{
+                        status.queue = songs;
+                        broadcast(status);
+                });
         }
     );
 }
@@ -66,6 +80,7 @@ function send_mpd_status(){
 
 // Прослушивание событий, связанных с воспроизведением
 mpc.on("changed-player", function(){
+    console.log("Трек изменен");
     send_mpd_status_witch_song_check();
 });
 
@@ -79,8 +94,14 @@ mpc.on("changed-mixer", function(){
     send_mpd_status();
 });
 
+// При изменениях в текущем плейлисте
+mpc.on("changed-playlist", function(){
+    send_mpd_status_with_current_playlist()
+});
+
 // Обработка подключения нового клиента
 wss.on("connection", function(ws){
+    console.log("Новое подключение");
     start_mpd_status(ws);
 });
 
